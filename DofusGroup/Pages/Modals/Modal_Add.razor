@@ -6,12 +6,12 @@
 <div class="simple-form">
 
     <div class="form-group">
-        <label for="movie-name">Nom :</label>
-        <input @bind="@CurrentUser.Name" type="text" class="form-control" id="movie-name" />
+        <label>Nom :</label>
+        <input @bind="@CurrentUser.Name" type="text" class="form-control"/>
     </div>
 
     <div class="form-group">
-        <label for="year">Classe :</label>
+        <label>Classe :</label>
         <select id="classe" @bind="@CurrentUser.ClassId">
             @foreach (var c in Classes)
             {
@@ -21,7 +21,7 @@
     </div>
 
     <div class="form-group">
-        <label for="year">Niveau :</label>
+        <label>Niveau :</label>
         <input @bind="@CurrentUser.Level" type="text" class="form-control" id="year" />
     </div>
 
@@ -46,9 +46,6 @@
 
     void Submit()
     {
-        //MovieService.Save(Movie);
-        //BlazoredModal.Close(ModalResult.Ok<Movie>(Movie));
-
         var user = UserService.CreateUser(CurrentUser);
         UserService.AddUserToDungeon(user.Id, DungeonId);
         BlazoredModal.Close(ModalResult.Ok($"Form was submitted successfully."));

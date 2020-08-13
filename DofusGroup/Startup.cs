@@ -15,6 +15,7 @@ using DofusGroup.Data.DB;
 using Microsoft.EntityFrameworkCore;
 using Blazored.Modal;
 using Blazored.Toast;
+using System.IO;
 
 namespace DofusGroup
 {
@@ -38,7 +39,8 @@ namespace DofusGroup
             services.AddScoped<UserService>();
             services.AddScoped<DungeonService>();
             services.AddSingleton<WeatherForecastService>();
-            services.AddDbContext<DofusContext>(options => options.UseSqlite($"Data Source=D:/Sources/DofusGroup/data/dofus.db"));
+            var connectionString = Path.GetFullPath("./DB/dofus.db");
+            services.AddDbContext<DofusContext>(options => options.UseSqlite($"Data Source={connectionString}"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
