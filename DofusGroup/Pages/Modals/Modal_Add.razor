@@ -1,0 +1,59 @@
+﻿@using DofusGroup.Data.Implementations
+@using DofusGroup.Shared.Models
+@inject UserService UserService
+@inject ClassService ClassService
+
+<div class="simple-form">
+
+    <div class="form-group">
+        <label for="movie-name">Nom :</label>
+        <input @bind="@CurrentUser.Name" type="text" class="form-control" id="movie-name" />
+    </div>
+
+    <div class="form-group">
+        <label for="year">Classe :</label>
+        <select id="classe" @bind="@CurrentUser.ClassId">
+            @foreach (var c in Classes)
+            {
+            <option value="@c.Id">@c.Name</option>
+            }
+            </select>
+    </div>
+
+    <div class="form-group">
+        <label for="year">Niveau :</label>
+        <input @bind="@CurrentUser.Level" type="text" class="form-control" id="year" />
+    </div>
+
+    <button @onclick="Submit" class="btn btn-primary">Submit</button>
+    <button @onclick="BlazoredModal.Cancel" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter] public int DungeonId { get; set; }
+
+    DofusGroup.Shared.Models.User CurrentUser { get; set; }
+    List<Class> Classes { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        CurrentUser = new User();
+        Classes = await ClassService.GetAllClasses();
+    }
+
+    void Submit()
+    {
+        //MovieService.Save(Movie);
+        //BlazoredModal.Close(ModalResult.Ok<Movie>(Movie));
+
+        var user = UserService.CreateUser(CurrentUser);
+        UserService.AddUserToDungeon(user.Id, DungeonId);
+        BlazoredModal.Close(ModalResult.Ok($"Form was submitted successfully."));
+    }
+
+
+
+}

@@ -1,0 +1,100 @@
+﻿@page "/dungeon/{DungeonId:int}"
+@using DofusGroup.Data.Implementations
+@using DofusGroup.Shared.Models
+@using DofusGroup.Pages.Modals;
+@inject DungeonService DungeonService
+@inject UserService UserService
+@inject IModalService Modal
+
+
+
+<ul>
+    @if (currentDungeon == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <h1>@currentDungeon.Name</h1>
+        <img src=@string.Format(@"images/{0}",@currentDungeon.ImgSource) alt="No Img." />
+        <ul>
+            <li>Boss : @currentDungeon.Boss</li>
+            <li>Niveau : @currentDungeon.Niveau</li>
+            <li>Position : @currentDungeon.Position</li>
+        </ul>
+        <br />
+        <br />
+        <h1>Personnes Interessees :</h1>
+
+        <button @onclick="@(() => ShowAddUserToDungeon())" class="btn btn-success">M'ajouter a la liste</button>
+
+        <br />
+        <br />
+        <br />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Classe</th>
+                    <th>Niveau</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in currentDungeon.DungeonUsers.Select(x => x.User))
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td><img src=@string.Format(@"images/Class/{0}",@user.Class.ImgSource) height="50" width="50" alt="No Img." />@user.Class.Name</td>
+                        <td>@user.Level</td>
+                        <td><button @onclick="@(() => RemoveUserFromDungeon(user.Id))" class="btn btn-danger">Retirer</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public int DungeonId { get; set; }
+
+    Dungeon currentDungeon;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentDungeon = await DungeonService.GetDungeonById(DungeonId);
+    }
+
+    async void ShowAddUserToDungeon()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add("DungeonId", DungeonId);
+
+        var modal = Modal.Show<Modal_Add>("Add User", parameters);
+
+        var result = await modal.Result;
+
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else
+        {
+            RefreshUsers();
+        }
+    }
+
+    async void RemoveUserFromDungeon(int userId)
+    {
+        UserService.RemoveUserFromDungeon(userId, DungeonId);
+        RefreshUsers();
+    }
+
+
+    void RefreshUsers()
+    {
+        StateHasChanged();
+    }
+
+}

@@ -1,0 +1,53 @@
+﻿@page "/dungeons"
+@using DofusGroup.Data.Implementations
+@using DofusGroup.Shared.Models
+@inject DungeonService DungeonService
+@inject UserService UserService
+
+<h1>Donjons</h1>
+
+<ul>
+    @if (dungeons == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!dungeons.Any())
+    {
+        <p><em>No Dungeon exist.</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in dungeons)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td><img src=@string.Format(@"images/{0}",@item.ImgSource) alt="No Img." /></td>
+                        <td><a href="/dungeon/@item.Id">@item.Name</a></td>
+                        <td>@item.Niveau</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</ul>
+
+@code {
+    List<Dungeon> dungeons;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dungeons = await DungeonService.GetAllDungeons();
+    }
+
+
+}
